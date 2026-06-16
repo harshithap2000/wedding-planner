@@ -1,11 +1,15 @@
 import { StatusBar } from 'expo-status-bar';
-import DashboardScreen from './screens/DashboardScreen';
+import { NavigationContainer } from '@react-navigation/native';
+import { WeddingProvider } from './context/WeddingContext';
+import TabNavigator from './navigation/TabNavigator';
 
 export default function App() {
   return (
-    <>
-      <StatusBar style="dark" />
-      <DashboardScreen />
-    </>
+    <WeddingProvider>
+      <NavigationContainer>
+        <StatusBar style="dark" />
+        <TabNavigator />
+      </NavigationContainer>
+    </WeddingProvider>
   );
 }

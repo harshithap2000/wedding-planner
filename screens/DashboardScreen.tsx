@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useMemo } from 'react';
 import {
   View,
   Text,
@@ -8,13 +8,11 @@ import {
   Dimensions,
 } from 'react-native';
 import { colors } from '../constants/theme';
+import { useWedding } from '../context/WeddingContext';
 
 const WEDDING_DATE = new Date('2026-12-20T10:00:00');
 const COUPLE_NAME_BRIDE = 'Harshitha';
 const COUPLE_NAME_GROOM = 'Sphurjith';
-
-const BUDGET_TOTAL = 500000;
-const BUDGET_SPENT = 187500;
 
 function getCountdown(target: Date) {
   const now = new Date();
@@ -35,6 +33,7 @@ function formatCurrency(amount: number) {
 }
 
 export default function DashboardScreen() {
+  const { budgetItems, budgetTotal } = useWedding();
   const [countdown, setCountdown] = useState(getCountdown(WEDDING_DATE));
 
   useEffect(() => {
@@ -44,8 +43,12 @@ export default function DashboardScreen() {
     return () => clearInterval(timer);
   }, []);
 
+  const BUDGET_SPENT = useMemo(() =>
+    budgetItems.reduce((sum, b) => sum + (b.actualCost ?? b.estimatedCost), 0),
+    [budgetItems]);
+  const BUDGET_TOTAL = budgetTotal;
   const budgetRemaining = BUDGET_TOTAL - BUDGET_SPENT;
-  const spentPercent = (BUDGET_SPENT / BUDGET_TOTAL) * 100;
+  const spentPercent = Math.min((BUDGET_SPENT / BUDGET_TOTAL) * 100, 100);
 
   const weddingDateStr = WEDDING_DATE.toLocaleDateString('en-IN', {
     day: 'numeric',
